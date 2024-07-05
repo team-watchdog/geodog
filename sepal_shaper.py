@@ -2,6 +2,8 @@ import geopandas as gpd
 import pandas as pd
 import csv
 from shapely.geometry import Point
+import os
+import argparse
 
 def load_properties(properties_csv):
     return pd.read_csv(properties_csv, index_col='properties')
@@ -61,8 +63,20 @@ def shapefile_to_csv(input_shapefile, properties_csv, output_csv):
     print(f"Entries kept: {kept_count}")
     print(f"Entries dropped: {total_count - kept_count}")
 
-# Usage example
-input_shapefile = 'path/to/your/input.shp'
-properties_csv = 'path/to/your/properties.csv'
-output_csv = 'path/to/your/output.csv'
-shapefile_to_csv(input_shapefile, properties_csv, output_csv)
+def main():
+    parser = argparse.ArgumentParser(description="Convert shapefile to CSV with property matching.")
+    parser.add_argument("input_shapefile", help="Path to the input shapefile")
+    parser.add_argument("properties_csv", help="Path to the properties CSV file")
+    parser.add_argument("output_csv", help="Path for the output CSV file")
+    args = parser.parse_args()
+
+    # Convert relative paths to absolute paths based on the current working directory
+    cwd = os.getcwd()
+    input_shapefile = os.path.join(cwd, args.input_shapefile)
+    properties_csv = os.path.join(cwd, args.properties_csv)
+    output_csv = os.path.join(cwd, args.output_csv)
+
+    shapefile_to_csv(input_shapefile, properties_csv, output_csv)
+
+if __name__ == "__main__":
+    main()
