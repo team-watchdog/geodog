@@ -24,8 +24,27 @@ def shapefile_to_csv(input_shapefile, properties_csv, output_csv):
         # Write the header
         csvwriter.writerow(['XCoordinate', 'YCoordinate', 'class', 'class_name'])
         
+        # Counter for dropped entries
+        dropped_count = 0
+        
         # Iterate through each feature in the GeoDataFrame
         for idx, row in gdf.iterrows():
+            # Get properties value
+            properties_value = row.get('properties', '')
+            
+            # Look up class and class_name from properties_df
+            if properties_value in properties_df.index:
+                class_value = properties_df.loc[properties_value, 'class']
+                class_name = properties_df.loc[properties_value, 'class_name']
+                
+                # Skip this entry if class is 'drop'
+                if class_value == 'drop':
+                    dropped_count += 1
+                    continue
+            else:
+                class_value = ''
+                class_name = ''
+            
             # Get the geometry
             geom = row['geometry']
             
@@ -37,22 +56,12 @@ def shapefile_to_csv(input_shapefile, properties_csv, output_csv):
                 centroid = geom.centroid
                 x, y = centroid.x, centroid.y
             
-            # Get properties value
-            properties_value = row.get('properties', '')
-            
-            # Look up class and class_name from properties_df
-            if properties_value in properties_df.index:
-                class_value = properties_df.loc[properties_value, 'class']
-                class_name = properties_df.loc[properties_value, 'class_name']
-            else:
-                class_value = ''
-                class_name = ''
-            
             # Write the row to CSV
             csvwriter.writerow([x, y, class_value, class_name])
     
     print(f"Conversion complete. Output saved to {output_csv}")
     print(f"CRS of the input shapefile: {gdf.crs}")
+    print(f"Number of entries dropped: {dropped_count}")
 
 # Usage example
 input_shapefile = 'path/to/your/input.shp'
