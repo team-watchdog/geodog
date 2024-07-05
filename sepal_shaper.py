@@ -9,62 +9,84 @@ def load_properties(properties_csv):
     return pd.read_csv(properties_csv, index_col='properties')
 
 def shapefile_to_csv(input_shapefile, properties_csv, output_csv):
-    # Read the shapefile
-    gdf = gpd.read_file(input_shapefile)
-    
-    # Ensure the GeoDataFrame has a CRS
-    if gdf.crs is None:
-        raise ValueError("Input shapefile does not have a defined CRS")
-    
-    # Load properties
-    properties_df = load_properties(properties_csv)
-    
-    # Open the output CSV file
-    with open(output_csv, 'w', newline='') as csvfile:
-        csvwriter = csv.writer(csvfile)
+    try:
+        # Read the shapefile
+        gdf = gpd.read_file(input_shapefile)
         
-        # Write the header
-        csvwriter.writerow(['XCoordinate', 'YCoordinate', 'class', 'class_name'])
+        # Ensure the GeoDataFrame has a CRS
+        if gdf.crs is None:
+            raise ValueError("Input shapefile does not have a defined CRS")
         
-        # Counters for statistics
-        total_count = 0
-        kept_count = 0
+        # Load properties
+        properties_df = load_properties(properties_csv)
         
-        # Iterate through each feature in the GeoDataFrame
-        for idx, row in gdf.iterrows():
-            total_count += 1
+        # Get all column names from properties_df
+        property_columns = properties_df.columns.tolist()
+        
+        # Open the output CSV file
+        with open(output_csv, 'w', newline='') as csvfile:
+            csvwriter = csv.writer(csvfile)
             
-            # Get properties value
-            properties_value = row.get('properties', '')
+            # Write the header
+            header = ['XCoordinate', 'YCoordinate'] + property_columns
+            csvwriter.writerow(header)
             
-            # Check if the properties value exists in the properties DataFrame
-            if properties_value in properties_df.index:
-                class_value = properties_df.loc[properties_value, 'class']
-                class_name = properties_df.loc[properties_value, 'class_name']
+            # Counters for statistics
+            total_count = 0
+            kept_count = 0
+            error_count = 0
+            no_match_count = 0
+            
+            # Iterate through each feature in the GeoDataFrame
+            for idx, row in gdf.iterrows():
+                total_count += 1
                 
-                # Get the geometry
-                geom = row['geometry']
+                # Get properties value
+                properties_value = row.get('properties', '')
                 
-                # Check if the geometry is a Point
-                if isinstance(geom, Point):
-                    x, y = geom.x, geom.y
+                # Check if the properties value exists in the properties DataFrame
+                if properties_value in properties_df.index:
+                    try:
+                        # Get all property values
+                        property_values = properties_df.loc[properties_value].values.tolist()
+                        
+                        # Get the geometry
+                        geom = row['geometry']
+                        
+                        # Check if the geometry is valid and not None
+                        if geom is not None and geom.is_valid:
+                            # Check if the geometry is a Point
+                            if isinstance(geom, Point):
+                                x, y = geom.x, geom.y
+                            else:
+                                # If it's not a Point, use the centroid
+                                centroid = geom.centroid
+                                x, y = centroid.x, centroid.y
+                            
+                            # Write the row to CSV
+                            csvwriter.writerow([x, y] + property_values)
+                            kept_count += 1
+                        else:
+                            print(f"Warning: Invalid or None geometry found for index {idx}. Skipping this entry.")
+                            error_count += 1
+                    except Exception as e:
+                        print(f"Error processing entry at index {idx}: {str(e)}")
+                        error_count += 1
                 else:
-                    # If it's not a Point, use the centroid
-                    centroid = geom.centroid
-                    x, y = centroid.x, centroid.y
-                
-                # Write the row to CSV
-                csvwriter.writerow([x, y, class_value, class_name])
-                kept_count += 1
+                    no_match_count += 1
+        
+        print(f"Conversion complete. Output saved to {output_csv}")
+        print(f"CRS of the input shapefile: {gdf.crs}")
+        print(f"Total entries processed: {total_count}")
+        print(f"Entries kept: {kept_count}")
+        print(f"Entries dropped due to no property match: {no_match_count}")
+        print(f"Entries skipped due to errors: {error_count}")
     
-    print(f"Conversion complete. Output saved to {output_csv}")
-    print(f"CRS of the input shapefile: {gdf.crs}")
-    print(f"Total entries processed: {total_count}")
-    print(f"Entries kept: {kept_count}")
-    print(f"Entries dropped: {total_count - kept_count}")
+    except Exception as e:
+        print(f"An error occurred during processing: {str(e)}")
 
 def main():
-    parser = argparse.ArgumentParser(description="Convert shapefile to CSV with property matching.")
+    parser = argparse.ArgumentParser(description="Convert shapefile to CSV with all property fields.")
     parser.add_argument("input_shapefile", help="Path to the input shapefile")
     parser.add_argument("properties_csv", help="Path to the properties CSV file")
     parser.add_argument("output_csv", help="Path for the output CSV file")
