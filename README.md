@@ -1,4 +1,4 @@
-# Image Processing and Analysis Tools
+# Geodog: Image Processing and Analysis Tools
 
 This repository contains a collection of Python scripts for processing, analyzing, and manipulating images. These tools are particularly useful for various image processing tasks, color analysis, and geographic information systems (GIS) applications.
 
