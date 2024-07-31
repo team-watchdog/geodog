@@ -2,6 +2,8 @@
 
 This repository contains a collection of Python scripts for processing, analyzing, and manipulating images. These tools were put together by team-watchdog and are particularly useful for various image processing tasks, color analysis, and geographic information systems (GIS) data processing work.
 
+[geodog is available as a python library](https://pypi.org/project/geodog/0.1.1/): use pip install geodog
+
 ## Scripts
 
 1. `image_to_points.py`: Converts an image to geo-referenced points.
