@@ -1,6 +1,6 @@
 # Geodog: Image Processing and Analysis Tools
 
-This repository contains a collection of Python scripts for processing, analyzing, and manipulating images. These tools are particularly useful for various image processing tasks, color analysis, and geographic information systems (GIS) applications. These utilities are available as a python library: [geodog](https://pypi.org/project/geodog/) (use pip install geodog).
+This repository contains a collection of Python scripts for processing, analyzing, and manipulating images. These tools were put together by team-watchdog and are particularly useful for various image processing tasks, color analysis, and geographic information systems (GIS) data processing work.
 
 ## Scripts
 
@@ -174,7 +174,7 @@ python colorchecker.py [-h] -i INPUT_IMAGE [-o OUTPUT_FILE] [-n NUM_COLORS]
 
 1. Clone this repository:
    ```
-   git clone https://github.com/yourusername/image-processing-tools.git
+   git clone https://github.com/team-watchdog/geodog
    ```
 
 2. Install the required packages:
@@ -182,10 +182,7 @@ python colorchecker.py [-h] -i INPUT_IMAGE [-o OUTPUT_FILE] [-n NUM_COLORS]
    pip install opencv-python numpy pillow geopandas shapely rasterio scikit-learn tqdm
    ```
 
-## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+## License and acknowledgements
 
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License. This work was created in partnership with the Strengthening Social Cohesion and Peace in Sri Lanka programme (SCOPE) co-funded by the European Union and German Federal Foreign Office. SCOPE is implemented by The Deutsche Gesellschaft für Internationale Zusammenarbeit (GIZ) GmbH in partnership with the Ministry of Justice, Prisons Affairs and Constitutional Reforms (MoJ).
