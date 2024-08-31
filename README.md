@@ -187,4 +187,4 @@ python colorchecker.py [-h] -i INPUT_IMAGE [-o OUTPUT_FILE] [-n NUM_COLORS]
 
 ## License and acknowledgements
 
-This project is licensed under the MIT License. This work was created in partnership with the Strengthening Social Cohesion and Peace in Sri Lanka programme (SCOPE) co-funded by the European Union and German Federal Foreign Office. SCOPE is implemented by The Deutsche Gesellschaft für Internationale Zusammenarbeit (GIZ) GmbH in partnership with the Ministry of Justice, Prisons Affairs and Constitutional Reforms (MoJ).
+This project is licensed under the MIT License. 
